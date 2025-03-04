@@ -26,9 +26,10 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     marginVertical: 12,
+    borderRadius: 20,
   },
   input: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: "#fff",
   },
   description: {
     fontSize: 13,

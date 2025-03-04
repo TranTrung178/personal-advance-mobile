@@ -10,7 +10,7 @@ export default function StartScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace("Login"); 
-    }, 5000);
+    }, 1000);
 
     return () => clearTimeout(timer); 
   }, [navigation]);

@@ -1,27 +1,33 @@
+import { Text } from "react-native-paper";
+
 import {
   StyleSheet,
-  Text,
+  
   View,
-  SafeAreaView,
   Image,
-  KeyboardAvoidingView,
-  TextInput,
-  Pressable,
+
   Alert,
   TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { MaterialIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { BlurView } from "@react-native-community/blur"; 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useContext } from "react";
 import { UserType } from "../UserContext";
 
+import Background from "../components/BackgroundLogin";
+import Logo from "../components/Logo";
+import Header from "../components/Header";
+import Button from "../components/Button";
+import TextInput from "../components/TextInput";
+import BackButton from "../components/BackButton";
+import { theme } from "../core/theme";
+import { useNavigation } from "@react-navigation/native";
 
-const LoginScreen = () => {
+
+export default function LoginScreen() {
   const { setUserId, setToken } = useContext(UserType);
 
   const [email, setEmail] = useState("");
@@ -70,162 +76,89 @@ const LoginScreen = () => {
         Alert.alert(`Login Error", "Invalid Email ${error}`);
       });
   };
+
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
-    >
-      <View style={{ paddingTop: 40 }}>
-        <Image
-          style={{ width: 150, height: 150 }}
-          source={{
-            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREIs419BPvSM2Kc_uT6rwWr1RHkeGMxYDS-UL8phGOtk64wrekwAQZta4UReHnCeIyQTE&usqp=CAU",
-          }}
+    <Background>
+      {/* <BlurView style={{ position: "absolute", }} blurType="light" blurAmount={15} /> */}
+
+      <View style= {{
+        marginTop: 100,
+        backgroundColor: "rgba(255, 255, 255, 0.5)", // Màu trắng mờ
+        padding: 20,
+        borderRadius: 10, // Bo góc
+        shadowColor: "#000",
+        // shadowOffset: { width: 0, height: 2 },
+        // shadowOpacity: 0.1,
+        // shadowRadius: 4,
+        elevation: 5, // Đổ bóng trên Android
+        width: "350",
+        height: "400",
+        alignItems: "center",
+        zIndex: 1,
+      }}>
+        {/* <BackButton goBack={navigation.goBack} /> */}
+        {/* <Logo /> */}
+        <Text style={{fontSize: 40}}>Login</Text>
+        <TextInput
+          label="Email"
+          returnKeyType="next"
+          value={email.value}
+          onChangeText={(text) => setEmail(text)}
+          error={!!email.error}
+          errorText={email.error}
+          autoCapitalize="none"
+          autoCompleteType="email"
+          textContentType="emailAddress"
+          keyboardType="email-address"
         />
-      </View>
-
-      <KeyboardAvoidingView>
-        <View style={{ alignItems: "center" }}>
-          <Text
-            style={{
-              fontSize: 17,
-              fontWeight: "bold",
-              marginTop: 12,
-              color: "#041E42",
-            }}
-          >
-            Login In to your Account
-          </Text>
-        </View>
-
-        <View style={{ marginTop: 70 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 5,
-              backgroundColor: "#D0D0D0",
-              paddingVertical: 5,
-              borderRadius: 5,
-              marginTop: 30,
-            }}
-          >
-            <MaterialIcons
-              style={{ marginLeft: 8 }}
-              name="email"
-              size={24}
-              color="gray"
-            />
-
-            <TextInput
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              style={{
-                color: "gray",
-                marginVertical: 10,
-                width: 300,
-                fontSize: email ? 16 : 16,
-              }}
-              placeholder="enter your Email"
-            />
-          </View>
-        </View>
-
-        <View style={{ marginTop: 10 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 5,
-              backgroundColor: "#D0D0D0",
-              paddingVertical: 5,
-              borderRadius: 5,
-              marginTop: 30,
-            }}
-          >
-            <AntDesign
-              name="lock1"
-              size={24}
-              color="gray"
-              style={{ marginLeft: 8 }}
-            />
-            <TextInput
-              style={{
-                color: "gray",
-                marginVertical: 10,
-                width: 300,
-                fontSize: password ? 16 : 16,
-              }}
-              placeholder="Enter password"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <Ionicons
-                name={showPassword ? "eye" : "eye-off"}
-                size={24}
-                color="gray"
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View
-          style={{
-            marginTop: 12,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text>Keep me logged in</Text>
-
-          <Text
-            style={{ color: "#007FFF", fontWeight: "500" }}
+        <TextInput
+          label="Password"
+          returnKeyType="done"
+          value={password.value}
+          onChangeText={setPassword}
+          error={!!password.error}
+          errorText={password.error}
+          secureTextEntry
+        />
+        <View style={styles.forgotPassword}>
+          <TouchableOpacity
             onPress={() => navigation.navigate("ForgotPassword")}
           >
-            Forgot Password
-          </Text>
+            <Text style={styles.forgot}>Forgot your password ?</Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={{ marginTop: 80 }} />
-
-        <Pressable
-          onPress={handleLogin}
-          style={{
-            width: 200,
-            backgroundColor: "#FEBE10",
-            borderRadius: 6,
-            marginLeft: "auto",
-            marginRight: "auto",
-            padding: 15,
-          }}
-        >
-          <Text
-            style={{
-              textAlign: "center",
-              color: "white",
-              fontSize: 16,
-              fontWeight: "bold",
-            }}
-          >
-            Login
-          </Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => navigation.navigate("Register")}
-          style={{ marginTop: 15 }}
-        >
-          <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
-            Don't have an account? Sign Up
-          </Text>
-        </Pressable>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        <Button mode="contained" onPress={handleLogin}>
+          Log in
+        </Button>
+        <View style={styles.row}>
+          <Text>You do not have an account yet ?</Text>
+        </View>
+        <View style={styles.row}>
+          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+            <Text style={styles.link}>Create !</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Background>
   );
-};
+}
 
-export default LoginScreen;
-
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  forgotPassword: {
+    width: "100%",
+    alignItems: "flex-end",
+    marginBottom: 10,
+  },
+  row: {
+    flexDirection: "row",
+    marginTop: 4,
+  },
+  forgot: {
+    fontSize: 13,
+    color: theme.colors.secondary,
+  },
+  link: {
+    fontWeight: "bold",
+    color: theme.colors.primary,
+  },
+});

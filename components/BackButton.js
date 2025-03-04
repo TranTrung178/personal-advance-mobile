@@ -7,7 +7,7 @@ export default function BackButton({ goBack }) {
     <TouchableOpacity onPress={goBack} style={styles.container}>
       <Image
         style={styles.image}
-        source={require("../../assets/items/back.png")}
+        source={require("../assets/items/back.png")}
       />
     </TouchableOpacity>
   );
