@@ -2,7 +2,7 @@ import { Text } from "react-native-paper";
 
 import {
   StyleSheet,
-  
+
   View,
   Image,
 
@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { BlurView } from "@react-native-community/blur"; 
+import { BlurView } from "@react-native-community/blur";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -56,7 +56,7 @@ export default function LoginScreen() {
     console.log(user)
 
     axios
-      .post("http://192.168.1.170:8080/api/v1/auth/signin", user)
+      .post("http://192.168.1.10:8080/api/v1/auth/signin", user)
       .then((response) => {
         const user = response.data.user;
         const token = response.data.token;
@@ -81,7 +81,7 @@ export default function LoginScreen() {
     <Background>
       {/* <BlurView style={{ position: "absolute", }} blurType="light" blurAmount={15} /> */}
 
-      <View style= {{
+      <View style={{
         marginTop: 100,
         backgroundColor: "rgba(255, 255, 255, 0.5)", // Màu trắng mờ
         padding: 20,
@@ -98,7 +98,7 @@ export default function LoginScreen() {
       }}>
         {/* <BackButton goBack={navigation.goBack} /> */}
         {/* <Logo /> */}
-        <Text style={{fontSize: 40}}>Login</Text>
+        <Text style={{ fontSize: 40 }}>Login</Text>
         <TextInput
           label="Email"
           returnKeyType="next"

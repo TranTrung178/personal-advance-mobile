@@ -3,15 +3,24 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/LoginScreen";
-import StartScreen from "../screens/StartScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+import VerifyOTPScreen from "../screens/VerifyOTPScreen";
+import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
+import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import HomeScreen from "../screens/HomeScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-
+import ProductInfoScreen from "../screens/ProductInfoScreen";
+import AddAddressScreen from "../screens/AddAddressScreen";
+import AddressScreen from "../screens/AddressScreen";
 import CartScreen from "../screens/CartScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import AccountScreen from "../screens/AccountScreen";
+import ChangeEmailScreen from "../screens/ChangeEmailScreen";
+import ConfirmationScreen from "../screens/ConfirmationScreen";
+import OrderScreen from "../screens/OrderScreen";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -72,8 +81,8 @@ const StackNavigator = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="Start"
-          component={StartScreen}
+          name="Register"
+          component={RegisterScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -81,13 +90,42 @@ const StackNavigator = () => {
           component={LoginScreen}
           options={{ headerShown: false }}
         />
+
+        <Stack.Screen
+          name="VerifyOTP"
+          component={VerifyOTPScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ForgotPassword"
+          component={ForgotPasswordScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPasswordScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Main"
           component={BottomTabs}
           options={{ headerShown: false }}
         />
-
-
+        <Stack.Screen
+          name="Info"
+          component={ProductInfoScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Account"
+          component={AccountScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ChangeEmailScreen"
+          component={ChangeEmailScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

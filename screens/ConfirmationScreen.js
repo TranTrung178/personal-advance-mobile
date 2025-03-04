@@ -86,8 +86,6 @@ const ConfirmationScreen = () => {
 
       const data = await RazorpayCheckout.open(options);
 
-      console.log(data)
-
       const orderData = {
         userId: userId,
         cartItems: cart,

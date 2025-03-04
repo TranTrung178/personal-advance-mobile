@@ -69,17 +69,13 @@ const ProfileScreen = () => {
         return;
       }
 
-      console.log("📡 Gửi request với token:", token);
-
       try {
         const response = await axios.get(
-          `http://192.168.1.170:8080/api/v1/user/order/${userId}`,
+          `http://192.168.1.10:8080/api/v1/user/order/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-
-        console.log("✅ Dữ liệu trả về:", response.data);
 
         const ordersData = Array.isArray(response.data) ? response.data : [response.data];
 
@@ -96,7 +92,6 @@ const ProfileScreen = () => {
 
 
 
-  console.log("orders", orders);
   return (
     <ScrollView style={{ padding: 10, flex: 1, backgroundColor: "white" }}>
       <Text style={{ fontSize: 16, fontWeight: "bold" }}>
