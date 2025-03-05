@@ -9,7 +9,7 @@ const ForgotPasswordScreen = () => {
 
     const handleForgotPassword = () => {
         axios
-            .post("http://192.168.1.10:8080/api/v1/auth/forget-password", { email })
+            .post("http://192.168.1.170:8080/api/v1/auth/forget-password", { email })
             .then((response) => {
                 Alert.alert("OTP Sent", "Check your email for the OTP.");
                 navigation.navigate("ResetPassword", { email });
