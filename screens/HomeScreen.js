@@ -192,6 +192,7 @@ const HomeScreen = () => {
 
   const fetchSearchResults = async (text) => {
     if (!text.trim()) return; // Không tìm kiếm nếu input rỗng
+    console.log(text, 'dfd')
     setloadingSearch(true);
     try {
       const response = await axios.get(

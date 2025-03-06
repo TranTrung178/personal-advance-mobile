@@ -11,7 +11,7 @@ const VerifyOTPScreen = () => {
 
     const handleVerifyOTP = () => {
         axios
-            .post("http://192.168.1.170:8080/api/v1/auth/verify-otp", { email, otp })
+            .post("http://192.168.1.10:8080/api/v1/auth/verify-otp", { email, otp })
             .then((response) => {
                 Alert.alert("Verification Successful", "Your account has been activated!");
                 navigation.navigate("Login");
