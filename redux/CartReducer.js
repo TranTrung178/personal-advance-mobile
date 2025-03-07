@@ -1,9 +1,37 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+export const fetchCart = createAsyncThunk(
+  "cart/fetchCart",
+
+  async ({ userId, token, checkCart, setCheckCart }, { rejectWithValue }) => {
+    try {
+      let response;
+      console.log(checkCart, 'kkkk');
+      if (checkCart) {
+        response = await axios.get(
+          `http://192.168.1.10:8080/api/v1/user/cart/${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setCheckCart(false);
+      }
+      // console.log("📌 API Response:", response.data);
+      return response.data;
+    } catch (error) {
+      // console.error("❌ API Fetch Error cart reducer:", error.response?.data, userId, token);
+      // return rejectWithValue(error.response?.data || "Lỗi khi tải giỏ hàng");
+    }
+  }
+);
 
 export const CartSlice = createSlice({
   name: "cart",
   initialState: {
     cart: [],
+    loading: false,
+    error: null,
   },
   reducers: {
     addToCart: (state, action) => {
@@ -17,38 +45,50 @@ export const CartSlice = createSlice({
       }
     },
     removeFromCart: (state, action) => {
-      const removeItem = state.cart.filter(
-        (item) => item.id !== action.payload.id
-      );
-      state.cart = removeItem;
+      state.cart = state.cart.filter((item) => item.id !== action.payload.id);
     },
     incementQuantity: (state, action) => {
-      const itemPresent = state.cart.find(
-        (item) => item.id === action.payload.id
-      );
-      itemPresent.quantity++;
-    },
-    decrementQuantity: (state, action) => {
-      const itemPresent = state.cart.find(
-        (item) => item.id === action.payload.id
-      );
-      if (itemPresent.quantity === 1) {
-        itemPresent.quantity = 0;
-        const removeItem = state.cart.filter(
-          (item) => item.id !== action.payload.id
-        );
-        state.cart = removeItem;
-      } else {
-        itemPresent.quantity--;
+      const item = state.cart.find((item) => item.id === action.payload.id);
+      if (item) {
+        item.quantity++;
       }
     },
-    cleanCart:(state) => {
-        state.cart = [];
-    }
+    decrementQuantity: (state, action) => {
+      const item = state.cart.find((item) => item.id === action.payload.id);
+      if (item) {
+        item.quantity--;
+        if (item.quantity === 0) {
+          state.cart = state.cart.filter((i) => i.id !== item.id);
+        }
+      }
+    },
+    cleanCart: (state) => {
+      state.cart = [];
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCart.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCart.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cart = action.payload || [];  // ✅ Gán đúng dữ liệu vào state
+      })
+      .addCase(fetchCart.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
+export const {
+  addToCart,
+  removeFromCart,
+  incementQuantity,
+  decrementQuantity,
+  cleanCart,
+} = CartSlice.actions;
 
-export const {addToCart,removeFromCart,incementQuantity,decrementQuantity,cleanCart} = CartSlice.actions;
-
-export default CartSlice.reducer
+export default CartSlice.reducer;

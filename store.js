@@ -3,6 +3,6 @@ import CartReducer from "./redux/CartReducer";
 
 export default configureStore({
     reducer:{
-        cart:CartReducer
+        cart: CartReducer
     }
 })

@@ -73,19 +73,17 @@ const ProfileScreen = () => {
 
       try {
         const response = await axios.get(
-          `http://192.168.1.10:8080/api/v1/user/order/${userId}`,
+          `http://192.168.1.10:8080/api/v1/user/my-orders/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
 
-        console.log("✅ Dữ liệu trả về:", response.data);
-
         const ordersData = Array.isArray(response.data) ? response.data : [response.data];
 
         setOrders(ordersData);
       } catch (error) {
-        console.error("❌ Lỗi khi lấy đơn hàng:", error.response?.status, error.response?.data || error);
+        console.error("❌ Lỗi khi lấy đơn hàng:", error.response?.status);
       } finally {
         setLoading(false);
       }
@@ -95,8 +93,6 @@ const ProfileScreen = () => {
   }, [userId, token]);
 
 
-
-  console.log("orders", orders);
   return (
     <ScrollView style={{ padding: 10, flex: 1, backgroundColor: "white" }}>
       <Text style={{ fontSize: 16, fontWeight: "bold" }}>

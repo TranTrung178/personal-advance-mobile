@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Pressable,Alert } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Pressable, Alert, TextInput } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { UserType } from "../UserContext";
@@ -19,11 +19,21 @@ const ConfirmationScreen = () => {
   const navigation = useNavigation();
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
-  const { userId, setUserId } = useContext(UserType);
-  const cart = useSelector((state) => state.cart.cart);
+  const { userId } = useContext(UserType);
+  const cart = useSelector((state) => state.cart.cart) || [];
   const total = cart
-    ?.map((item) => item.price * item.quantity)
+    ?.map((item, index) => item.price * item.quantity)
     .reduce((curr, prev) => curr + prev, 0);
+  const [newAddress, setNewAddress] = useState({
+    name: "",
+    houseNo: "",
+    landmark: "",
+    street: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    mobileNo: "",
+  });
   useEffect(() => {
     fetchAddresses();
   }, []);
@@ -46,18 +56,21 @@ const ConfirmationScreen = () => {
   const handlePlaceOrder = async () => {
     try {
       const orderData = {
-        userId: userId,
+        address: addresses,
+        user_Id: userId,
         cartItems: cart,
-        totalPrice: total,
-        shippingAddress: selectedAddress,
-        paymentMethod: selectedOption,
+        amount: total,
+        total_amount: total,
+        order_status: 0,
+        payment: selectedOption,
+
       };
 
-      const response = await axios.post(
-        "http://localhost:8000/orders",
-        orderData
-      );
-      if (response.status === 200) {
+      // const response = await axios.post(
+      //   "http://localhost:8000/orders",
+      //   orderData
+      // );
+      if (1) {
         navigation.navigate("Order");
         dispatch(cleanCart());
         console.log("order created successfully", response.data);
@@ -94,11 +107,11 @@ const ConfirmationScreen = () => {
         paymentMethod: "card",
       };
 
-      const response = await axios.post(
-        "http://localhost:8000/orders",
-        orderData
-      );
-      if (response.status === 200) {
+      // const response = await axios.post(
+      //   "http://localhost:8000/orders",
+      //   orderData
+      // );
+      if (1) {
         navigation.navigate("Order");
         dispatch(cleanCart());
         console.log("order created successfully", response.data);
@@ -121,7 +134,10 @@ const ConfirmationScreen = () => {
           }}
         >
           {steps?.map((step, index) => (
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View
+              key={index} // Thêm key ở đây
+              style={{ justifyContent: "center", alignItems: "center" }}
+            >
               {index > 0 && (
                 <View
                   style={[
@@ -144,24 +160,19 @@ const ConfirmationScreen = () => {
                 ]}
               >
                 {index < currentStep ? (
-                  <Text
-                    style={{ fontSize: 16, fontWeight: "bold", color: "white" }}
-                  >
+                  <Text style={{ fontSize: 16, fontWeight: "bold", color: "white" }}>
                     &#10003;
                   </Text>
                 ) : (
-                  <Text
-                    style={{ fontSize: 16, fontWeight: "bold", color: "white" }}
-                  >
+                  <Text style={{ fontSize: 16, fontWeight: "bold", color: "white" }}>
                     {index + 1}
                   </Text>
                 )}
               </View>
-              <Text style={{ textAlign: "center", marginTop: 8 }}>
-                {step.title}
-              </Text>
+              <Text style={{ textAlign: "center", marginTop: 8 }}>{step.title}</Text>
             </View>
           ))}
+
         </View>
       </View>
 
@@ -171,136 +182,71 @@ const ConfirmationScreen = () => {
             Select Delivery Address
           </Text>
 
-          <Pressable>
-            {addresses?.map((item, index) => (
-              <Pressable
-                style={{
-                  borderWidth: 1,
-                  borderColor: "#D0D0D0",
-                  padding: 10,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 5,
-                  paddingBottom: 17,
-                  marginVertical: 7,
-                  borderRadius: 6,
-                }}
-              >
-                {selectedAddress && selectedAddress._id === item?._id ? (
-                  <FontAwesome5 name="dot-circle" size={20} color="#008397" />
-                ) : (
-                  <Entypo
-                    onPress={() => setSelectedAdress(item)}
-                    name="circle"
-                    size={20}
-                    color="gray"
-                  />
-                )}
+          <View style={{ marginHorizontal: 20 }}>
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>Nhập địa chỉ giao hàng</Text>
 
-                <View style={{ marginLeft: 6 }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 3,
-                    }}
-                  >
-                    <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-                      {item?.name}
-                    </Text>
-                    <Entypo name="location-pin" size={24} color="red" />
-                  </View>
+            <TextInput
+              placeholder="Họ và tên"
+              value={newAddress.name}
+              onChangeText={(text) => setNewAddress({ ...newAddress, name: text })}
+              style={styles.input}
+            />
 
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    {item?.houseNo}, {item?.landmark}
-                  </Text>
+            <TextInput
+              placeholder="Số nhà, căn hộ, tòa nhà"
+              value={newAddress.houseNo}
+              onChangeText={(text) => setNewAddress({ ...newAddress, houseNo: text })}
+              style={styles.input}
+            />
 
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    {item?.street}
-                  </Text>
+            <TextInput
+              placeholder="Đường, phường/xã"
+              value={newAddress.street}
+              onChangeText={(text) => setNewAddress({ ...newAddress, street: text })}
+              style={styles.input}
+            />
 
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    India, Bangalore
-                  </Text>
+            <TextInput
+              placeholder="Thành phố"
+              value={newAddress.city}
+              onChangeText={(text) => setNewAddress({ ...newAddress, city: text })}
+              style={styles.input}
+            />
 
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    phone No : {item?.mobileNo}
-                  </Text>
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    pin code : {item?.postalCode}
-                  </Text>
+            <TextInput
+              placeholder="Mã bưu điện"
+              value={newAddress.postalCode}
+              onChangeText={(text) => setNewAddress({ ...newAddress, postalCode: text })}
+              style={styles.input}
+              keyboardType="numeric"
+            />
 
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 10,
-                      marginTop: 7,
-                    }}
-                  >
-                    <Pressable
-                      style={{
-                        backgroundColor: "#F5F5F5",
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.9,
-                        borderColor: "#D0D0D0",
-                      }}
-                    >
-                      <Text>Edit</Text>
-                    </Pressable>
+            <TextInput
+              placeholder="Số điện thoại"
+              value={newAddress.mobileNo}
+              onChangeText={(text) => setNewAddress({ ...newAddress, mobileNo: text })}
+              style={styles.input}
+              keyboardType="phone-pad"
+            />
 
-                    <Pressable
-                      style={{
-                        backgroundColor: "#F5F5F5",
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.9,
-                        borderColor: "#D0D0D0",
-                      }}
-                    >
-                      <Text>Remove</Text>
-                    </Pressable>
+            <Pressable
+              onPress={() => {
+                setSelectedAdress(newAddress);
+                setCurrentStep(1);
+              }}
+              style={{
+                backgroundColor: "#878595",
+                padding: 10,
+                borderRadius: 20,
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 10,
+              }}
+            >
+              <Text style={{ textAlign: "center", color: "white" }}>Deliver to this address</Text>
+            </Pressable>
+          </View>
 
-                    <Pressable
-                      style={{
-                        backgroundColor: "#F5F5F5",
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.9,
-                        borderColor: "#D0D0D0",
-                      }}
-                    >
-                      <Text>Set as Default</Text>
-                    </Pressable>
-                  </View>
-
-                  <View>
-                    {selectedAddress && selectedAddress._id === item?._id && (
-                      <Pressable
-                        onPress={() => setCurrentStep(1)}
-                        style={{
-                          backgroundColor: "#008397",
-                          padding: 10,
-                          borderRadius: 20,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          marginTop: 10,
-                        }}
-                      >
-                        <Text style={{ textAlign: "center", color: "white" }}>
-                          Deliver to this Address
-                        </Text>
-                      </Pressable>
-                    )}
-                  </View>
-                </View>
-              </Pressable>
-            ))}
-          </Pressable>
         </View>
       )}
 
@@ -424,7 +370,7 @@ const ConfirmationScreen = () => {
               />
             )}
 
-            <Text>UPI / Credit or debit card</Text>
+            <Text>Credit or debit card</Text>
           </View>
           <Pressable
             onPress={() => setCurrentStep(3)}

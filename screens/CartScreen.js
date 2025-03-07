@@ -7,262 +7,95 @@ import {
   TextInput,
   Image,
 } from "react-native";
-import React from "react";
-import { Feather } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
+import React, { useEffect, useContext } from "react";
+import { Feather, AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   decrementQuantity,
   incementQuantity,
   removeFromCart,
-} from "../redux/CartReducer";
+  fetchCart,
+} from "../redux/CartReducer.js";
 import { useNavigation } from "@react-navigation/native";
+import { UserType } from "../UserContext";
 
 const CartScreen = () => {
-  const cart = useSelector((state) => state.cart.cart);
-  const total = cart
-    ?.map((item) => item.price * item.quantity)
-    .reduce((curr, prev) => curr + prev, 0);
+  const { userId, token, checkCart, setCheckCart } = useContext(UserType);
+  
+  console.log(checkCart, 'fdjdf');
+
   const dispatch = useDispatch();
-  const increaseQuantity = (item) => {
-    dispatch(incementQuantity(item));
-  };
-  const decreaseQuantity = (item) => {
-    dispatch(decrementQuantity(item));
-  };
-  const deleteItem = (item) => {
-    dispatch(removeFromCart(item));
-  };
+  const cart = useSelector((state) => state.cart.cart) || [];
+
+  useEffect(() => {
+    dispatch(fetchCart({ userId, token, checkCart, setCheckCart }));
+  }, [dispatch]);
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const navigation = useNavigation();
+
   return (
-    <ScrollView style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}>
-      <View
-        style={{
-          backgroundColor: "#00CED1",
-          padding: 10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Pressable
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginHorizontal: 7,
-            gap: 10,
-            backgroundColor: "white",
-            borderRadius: 3,
-            height: 38,
-            flex: 1,
-          }}
-        >
-          <AntDesign
-            style={{ paddingLeft: 10 }}
-            name="search1"
-            size={22}
-            color="black"
-          />
-          <TextInput placeholder="Search Amazon.in" />
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Pressable style={styles.searchBox}>
+          <AntDesign style={styles.searchIcon} name="search1" size={22} color="black" />
+          <TextInput placeholder="Search Furniture.ute" style={styles.searchInput} />
         </Pressable>
-
-        <Feather name="mic" size={24} color="black" />
+        <Pressable onPress={() => navigation.navigate("Profile")}>
+          <Image
+            source={{ uri: "https://img.freepik.com/premium-vector/avatar-profile-vector-illustrations-website-social-networks-user-profile-icon_495897-224.jpg" }}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 50,
+            }}
+          />
+        </Pressable>
       </View>
 
-      <View style={{ padding: 10, flexDirection: "row", alignItems: "center" }}>
-        <Text style={{ fontSize: 18, fontWeight: "400" }}>Subtotal : </Text>
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{total}</Text>
+      <View style={styles.subtotalContainer}>
+        <Text style={styles.subtotalText}>Subtotal:</Text>
+        <Text style={styles.totalPrice}>{total}</Text>
       </View>
-      <Text style={{ marginHorizontal: 10 }}>EMI details Available</Text>
+      <Text style={styles.emiDetails}>EMI details Available</Text>
 
-      <Pressable
-        onPress={() => navigation.navigate("Confirm")}
-        style={{
-          backgroundColor: "#FFC72C",
-          padding: 10,
-          borderRadius: 5,
-          justifyContent: "center",
-          alignItems: "center",
-          marginHorizontal: 10,
-          marginTop: 10,
-        }}
-      >
-        <Text>Proceed to Buy ({cart.length}) items</Text>
+      <Pressable onPress={() => navigation.navigate("Confirm")} style={styles.proceedButton}>
+        {cart && cart.length > 0 ? (
+          <Text>You have {cart.length} items in your cart.</Text>
+        ) : (
+          <Text>Your cart is empty.</Text>
+        )}
+
       </Pressable>
 
-      <Text
-        style={{
-          height: 1,
-          borderColor: "#D0D0D0",
-          borderWidth: 1,
-          marginTop: 16,
-        }}
-      />
+      <View style={styles.divider} />
 
-      <View style={{ marginHorizontal: 10 }}>
+      <View style={styles.cartContainer}>
         {cart?.map((item, index) => (
-          <View
-            style={{
-              backgroundColor: "white",
-              marginVertical: 10,
-              borderBottomColor: "#F0F0F0",
-              borderWidth: 2,
-              borderLeftWidth: 0,
-              borderTopWidth: 0,
-              borderRightWidth: 0,
-            }}
-            key={index}
-          >
-            <Pressable
-              style={{
-                marginVertical: 10,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <View>
-                <Image
-                  style={{ width: 140, height: 140, resizeMode: "contain" }}
-                  source={{ uri: item?.image }}
-                />
-              </View>
-
-              <View>
-                <Text numberOfLines={3} style={{ width: 150, marginTop: 10 }}>
-                  {item?.title}
-                </Text>
-                <Text
-                  style={{ fontSize: 20, fontWeight: "bold", marginTop: 6 }}
-                >
-                  {item?.price}
-                </Text>
-                <Image
-                  style={{ width: 30, height: 30, resizeMode: "contain" }}
-                  source={{
-                    uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREIs419BPvSM2Kc_uT6rwWr1RHkeGMxYDS-UL8phGOtk64wrekwAQZta4UReHnCeIyQTE&usqp=CAU",
-                  }}
-                />
-                <Text style={{ color: "green" }}>In Stock</Text>
-                {/* <Text style={{ fontWeight: "500", marginTop: 6 }}>
-                  {item?.rating?.rate} ratings
-                </Text> */}
+          <View style={styles.cartItem} key={index}>
+            <Pressable style={styles.itemRow}>
+              <Image style={styles.itemImage} source={{ uri: `data:image/jpeg;base64,${item?.img || item?.img1}` }} />
+              <View style={styles.itemDetails}>
+                <Text numberOfLines={3} style={styles.itemTitle}>{item.productName || item.name}</Text>
+                <Text style={styles.itemPrice}>{item.price}</Text>
+                <Image style={styles.stockImage} source={{ uri: "https://example.com/stock.png" }} />
+                <Text style={styles.inStock}>In Stock</Text>
               </View>
             </Pressable>
 
-            <Pressable
-              style={{
-                marginTop: 15,
-                marginBottom: 10,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  borderRadius: 7,
-                }}
-              >
-                {item?.quantity > 1 ? (
-                  <Pressable
-                    onPress={() => decreaseQuantity(item)}
-                    style={{
-                      backgroundColor: "#D8D8D8",
-                      padding: 7,
-                      borderTopLeftRadius: 6,
-                      borderBottomLeftRadius: 6,
-                    }}
-                  >
-                    <AntDesign name="minus" size={24} color="black" />
-                  </Pressable>
-                ) : (
-                  <Pressable
-                    onPress={() => deleteItem(item)}
-                    style={{
-                      backgroundColor: "#D8D8D8",
-                      padding: 7,
-                      borderTopLeftRadius: 6,
-                      borderBottomLeftRadius: 6,
-                    }}
-                  >
-                    <AntDesign name="delete" size={24} color="black" />
-                  </Pressable>
-                )}
-
-                <Pressable
-                  style={{
-                    backgroundColor: "white",
-                    paddingHorizontal: 18,
-                    paddingVertical: 6,
-                  }}
-                >
-                  <Text>{item?.quantity}</Text>
-                </Pressable>
-
-                <Pressable
-                  onPress={() => increaseQuantity(item)}
-                  style={{
-                    backgroundColor: "#D8D8D8",
-                    padding: 7,
-                    borderTopLeftRadius: 6,
-                    borderBottomLeftRadius: 6,
-                  }}
-                >
-                  <Feather name="plus" size={24} color="black" />
-                </Pressable>
-              </View>
-              <Pressable
-                onPress={() => deleteItem(item)}
-                style={{
-                  backgroundColor: "white",
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                  borderColor: "#C0C0C0",
-                  borderWidth: 0.6,
-                }}
-              >
+            <View style={styles.quantityContainer}>
+              <Pressable onPress={() => item.quantity > 1 ? dispatch(decrementQuantity(item)) : dispatch(removeFromCart(item))} style={styles.quantityButton}>
+                <AntDesign name={item.quantity > 1 ? "minus" : "delete"} size={24} color="black" />
+              </Pressable>
+              <Text style={styles.quantityText}>{item.quantity}</Text>
+              <Pressable onPress={() => dispatch(incementQuantity(item))} style={styles.quantityButton}>
+                <Feather name="plus" size={24} color="black" />
+              </Pressable>
+              <Pressable onPress={() => dispatch(removeFromCart(item))} style={styles.deleteButton}>
                 <Text>Delete</Text>
               </Pressable>
-            </Pressable>
+            </View>
 
-            <Pressable
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                marginBottom: 15,
-              }}
-            >
-              <Pressable
-                style={{
-                  backgroundColor: "white",
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                  borderColor: "#C0C0C0",
-                  borderWidth: 0.6,
-                }}
-              >
-                <Text>Save For Later</Text>
-              </Pressable>
-
-              <Pressable
-                style={{
-                  backgroundColor: "white",
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                  borderColor: "#C0C0C0",
-                  borderWidth: 0.6,
-                }}
-              >
-                <Text>See More Like this</Text>
-              </Pressable>
-            </Pressable>
           </View>
         ))}
       </View>
@@ -270,6 +103,31 @@ const CartScreen = () => {
   );
 };
 
-export default CartScreen;
+const styles = StyleSheet.create({
+  container: { marginTop: 40, flex: 1, backgroundColor: "white" },
+  header: { backgroundColor: "#878595", padding: 10, flexDirection: "row", alignItems: "center" },
+  searchBox: { flexDirection: "row", alignItems: "center", flex: 1, backgroundColor: "white", borderRadius: 3, height: 38, marginHorizontal: 7 },
+  searchIcon: { paddingLeft: 10 },
+  searchInput: { flex: 1 },
+  subtotalContainer: { padding: 10, flexDirection: "row", alignItems: "center" },
+  subtotalText: { fontSize: 18, fontWeight: "400" },
+  totalPrice: { fontSize: 20, fontWeight: "bold" },
+  emiDetails: { marginHorizontal: 10 },
+  proceedButton: { backgroundColor: "#FFC72C", padding: 10, borderRadius: 5, justifyContent: "center", alignItems: "center", marginHorizontal: 10, marginTop: 10 },
+  divider: { height: 1, borderColor: "#D0D0D0", borderWidth: 1, marginTop: 16 },
+  cartContainer: { marginHorizontal: 10 },
+  cartItem: { backgroundColor: "white", marginVertical: 10, borderBottomColor: "#F0F0F0", borderWidth: 2, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0 },
+  itemRow: { marginVertical: 10, flexDirection: "row", justifyContent: "space-between" },
+  itemImage: { width: 140, height: 140, resizeMode: "contain" },
+  itemDetails: { width: 150 },
+  itemTitle: { marginTop: 10 },
+  itemPrice: { fontSize: 20, fontWeight: "bold", marginTop: 6 },
+  stockImage: { width: 30, height: 30, resizeMode: "contain" },
+  inStock: { color: "green" },
+  quantityContainer: { flexDirection: "row", alignItems: "center", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7 },
+  quantityButton: { backgroundColor: "#D8D8D8", padding: 7, borderRadius: 6 },
+  quantityText: { backgroundColor: "white", paddingHorizontal: 18, paddingVertical: 6 },
+  deleteButton: { backgroundColor: "white", marginLeft: 15, paddingHorizontal: 8, paddingVertical: 10, borderRadius: 10, borderColor: "#C0C0C0", borderWidth: 0.6 },
+});
 
-const styles = StyleSheet.create({});
+export default CartScreen;
