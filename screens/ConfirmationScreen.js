@@ -86,7 +86,7 @@ const ConfirmationScreen = () => {
       const options = {
         description: "Adding To Wallet",
         currency: "INR",
-        name: "Amazon",
+        name: "Furniture",
         key: "rzp_test_E3GWYimxN7YMk8",
         amount: total * 100,
         prefill: {
@@ -444,7 +444,7 @@ const ConfirmationScreen = () => {
                 Items
               </Text>
 
-              <Text style={{ color: "gray", fontSize: 16 }}>₹{total}</Text>
+              <Text style={{ color: "gray", fontSize: 16 }}>{total}₫</Text>
             </View>
 
             <View
@@ -459,7 +459,7 @@ const ConfirmationScreen = () => {
                 Delivery
               </Text>
 
-              <Text style={{ color: "gray", fontSize: 16 }}>₹0</Text>
+              <Text style={{ color: "gray", fontSize: 16 }}>0₫</Text>
             </View>
 
             <View
@@ -477,7 +477,7 @@ const ConfirmationScreen = () => {
               <Text
                 style={{ color: "#C60C30", fontSize: 17, fontWeight: "bold" }}
               >
-                ₹{total}
+                {total}₫
               </Text>
             </View>
           </View>

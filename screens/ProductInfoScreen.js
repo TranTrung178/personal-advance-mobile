@@ -7,6 +7,7 @@ import {
   TextInput,
   ImageBackground,
   Dimensions,
+  Image
 } from "react-native";
 import React, { useState } from "react";
 import { AntDesign, Feather } from "@expo/vector-icons";
@@ -43,7 +44,7 @@ const ProductInfoScreen = () => {
       {/* Search Bar */}
       <View
         style={{
-          backgroundColor: "#00CED1",
+          backgroundColor: "#878595",
           padding: 10,
           flexDirection: "row",
           alignItems: "center",
@@ -67,10 +68,19 @@ const ProductInfoScreen = () => {
             size={22}
             color="black"
           />
-          <TextInput placeholder="Search Amazon.in" />
+          <TextInput placeholder="Search Furniture.ute" />
         </Pressable>
 
-        <Feather name="mic" size={24} color="black" />
+        <Pressable onPress={() => navigation.navigate("Profile")}>
+          <Image
+            source={{ uri: "https://img.freepik.com/premium-vector/avatar-profile-vector-illustrations-website-social-networks-user-profile-icon_495897-224.jpg" }}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 50,
+            }}
+          />
+        </Pressable>
       </View>
 
       {/* Product Images */}
@@ -160,7 +170,7 @@ const ProductInfoScreen = () => {
         </Text>
 
         <Text style={{ fontSize: 18, fontWeight: "600", marginTop: 6 }}>
-          ₹{route?.params?.price}
+          {route?.params?.price}₫
         </Text>
       </View>
 
@@ -168,7 +178,7 @@ const ProductInfoScreen = () => {
 
       <View style={{ padding: 10 }}>
         <Text style={{ fontSize: 15, fontWeight: "bold", marginVertical: 5 }}>
-          Total : ₹{route.params.price}
+          Total : {route.params.price}₫
         </Text>
         <Text style={{ color: "#00CED1" }}>
           FREE delivery Tomorrow by 3 PM.Order within 10hrs 30 mins
