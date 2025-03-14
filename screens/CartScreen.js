@@ -26,12 +26,15 @@ const CartScreen = () => {
 
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cart) || [];
+  const orderId = useSelector((state) => state.cart.orderId) || null;
+  console.log('cart length: ', cart.length);
+  console.log('orderOd: ', orderId);
 
   useEffect(() => {
     dispatch(fetchCart({ userId, token, checkCart, setCheckCart }));
   }, [dispatch]);
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = cart ? cart.reduce((sum, item) => sum + item.price * item.quantity, 0) : 0;
   const navigation = useNavigation();
 
   return (

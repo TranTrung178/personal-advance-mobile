@@ -8,19 +8,22 @@ export const fetchCart = createAsyncThunk(
     try {
       let response;
       console.log(checkCart, 'kkkk');
-      if (checkCart) {
+      if (1) {
         response = await axios.get(
-          `http://192.168.1.10:8080/api/v1/user/cart/${userId}`,
+          `http://192.168.1.240:8080/api/v1/user/cart/1`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
         setCheckCart(false);
       }
-      // console.log("📌 API Response:", response.data);
-      return response.data;
+      return response.data ? response.data : {
+        userId,
+        id: null, //order
+        cartItems: [],
+      };
     } catch (error) {
-      // console.error("❌ API Fetch Error cart reducer:", error.response?.data, userId, token);
+      console.log("❌ API Fetch Error cart reducer:", userId, token);
       // return rejectWithValue(error.response?.data || "Lỗi khi tải giỏ hàng");
     }
   }
@@ -32,33 +35,61 @@ export const CartSlice = createSlice({
     cart: [],
     loading: false,
     error: null,
+    userId: null,
+    orderId: null,
   },
   reducers: {
     addToCart: (state, action) => {
+      console.log("Top-level keys:", Object.keys(action.payload), '23d2334kk');
+      console.log("statesdsd", Object.keys(state), '23d2334kk');
+      console.log('dfdfdf', state.userId);
+
       const itemPresent = state.cart.find(
-        (item) => item.id === action.payload.id
+        (item) => item.productId === action.payload.id
       );
       if (itemPresent) {
         itemPresent.quantity++;
       } else {
-        state.cart.push({ ...action.payload, quantity: 1 });
+        state.cart.push({
+          id: null,
+          productId: action.payload.id,
+          productName: action.payload.name,
+          price: action.payload.price,
+          quantity: 1,
+          img: action.payload.img1,
+          userId: state.userId || null,
+          orderId: state.orderId || null,
+        });
       }
     },
     removeFromCart: (state, action) => {
-      state.cart = state.cart.filter((item) => item.id !== action.payload.id);
+      console.log("Top-level keys:", Object.keys(action.payload), '2334kk');
+
+      state.cart = state.cart.filter((item) => item.productName !== action.payload.productName);
     },
     incementQuantity: (state, action) => {
-      const item = state.cart.find((item) => item.id === action.payload.id);
+      console.log("Top-level keys:", Object.keys(action.payload), '2334kk');
+      console.log('productName', action.payload.productName)
+      const item = state.cart.find((item) => item.productName === action.payload.productName);
       if (item) {
+        const isRestrictedProduct =
+          item.productName === "Tủ bếp Daily" || item.productName === "Tủ bếp Fancy";
+
+        if (isRestrictedProduct && item.quantity >= 10) {
+          return; // Không tăng nữa nếu đã tới giới hạn
+        }
+
         item.quantity++;
       }
     },
     decrementQuantity: (state, action) => {
-      const item = state.cart.find((item) => item.id === action.payload.id);
+      console.log("Top-level keys:", Object.keys(action.payload), '2334kk');
+
+      const item = state.cart.find((item) => item.productName === action.payload.productName);
       if (item) {
         item.quantity--;
         if (item.quantity === 0) {
-          state.cart = state.cart.filter((i) => i.id !== item.id);
+          state.cart = state.cart.filter((i) => i.productName !== item.productName);
         }
       }
     },
@@ -70,15 +101,17 @@ export const CartSlice = createSlice({
     builder
       .addCase(fetchCart.pending, (state) => {
         state.loading = true;
-        state.error = null;
+        state.error = "error pending";
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.cart = action.payload || [];  // ✅ Gán đúng dữ liệu vào state
+        state.cart = action.payload.cartItems || [];
+        state.userId = action.payload.userId || null;
+        state.orderId = action.payload.id || null;
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = "error rejected";
       });
   },
 });

@@ -20,6 +20,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import AccountScreen from "../screens/AccountScreen";
 import ChangeEmailScreen from "../screens/ChangeEmailScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
+import OrderDetailsScreen from "../screens/OrderDetailsScreen";
 import OrderScreen from "../screens/OrderScreen";
 import StartScreen from "../screens/StartScreen";
 
@@ -135,6 +136,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Confirm"
           component={ConfirmationScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OrderHistory"
+          component={OrderDetailsScreen}
           options={{ headerShown: false }}
         />
 
