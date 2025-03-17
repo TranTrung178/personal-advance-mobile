@@ -21,7 +21,7 @@ const ChangeEmailScreen = () => {
 
         try {
             const response = await axios.post(
-                "http://192.168.1.10:8080/api/v1/user/change-email",
+                "http://192.168.1.240:8080/api/v1/user/change-email",
                 {
                     email: newEmail,
                     userId: userId
@@ -49,7 +49,7 @@ const ChangeEmailScreen = () => {
             console.log(userId, newEmail, otp)
 
             const response = await axios.post(
-                "http://192.168.1.10:8080/api/v1/user/verify-otp",
+                "http://192.168.1.240:8080/api/v1/user/verify-otp",
                 { userId, email: newEmail, otp },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, Pressable, Alert, TextInput } from "react-native";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { UserType } from "../UserContext";
 import { Entypo } from "@expo/vector-icons";
@@ -7,7 +7,6 @@ import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { cleanCart } from "../redux/CartReducer";
 import { useNavigation } from "@react-navigation/native";
-import RazorpayCheckout from "react-native-razorpay";
 
 const ConfirmationScreen = () => {
   const steps = [
@@ -19,8 +18,11 @@ const ConfirmationScreen = () => {
   const navigation = useNavigation();
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
-  const { userId } = useContext(UserType);
+  const { userId, token } = useContext(UserType);
+  console.log('Confirmmation: ', userId, token);
   const cart = useSelector((state) => state.cart.cart) || [];
+  const orderId = useSelector((state) => state.cart.orderId) || null;
+  const user_id = userId ? userId : (useSelector((state) => state.cart.userId) || null);
   const total = cart
     ?.map((item, index) => item.price * item.quantity)
     .reduce((curr, prev) => curr + prev, 0);
@@ -34,53 +36,71 @@ const ConfirmationScreen = () => {
     postalCode: "",
     mobileNo: "",
   });
-  useEffect(() => {
-    fetchAddresses();
-  }, []);
-  const fetchAddresses = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/addresses/${userId}`
-      );
-      const { addresses } = response.data;
 
-      setAddresses(addresses);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
   const dispatch = useDispatch();
   const [selectedAddress, setSelectedAdress] = useState("");
   const [option, setOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const handlePlaceOrder = async () => {
     try {
-      const orderData = {
-        address: addresses,
-        user_Id: userId,
-        cartItems: cart,
-        amount: total,
-        total_amount: total,
-        order_status: 0,
-        payment: selectedOption,
 
+      console.log(newAddress);
+      const orderData = {
+        description: '',
+        address: Object.values(newAddress).filter(Boolean).join(', '),
+        userId: user_id,
+        amount: total,
+        totalAmount: total,
+        payment: selectedOption,
+        discount: 0,
+        couponId: 0,
+        orderId: orderId || 0,
       };
 
-      // const response = await axios.post(
-      //   "http://localhost:8000/orders",
-      //   orderData
-      // );
-      if (1) {
-        navigation.navigate("Order");
-        dispatch(cleanCart());
-        console.log("order created successfully", response.data);
-      } else {
-        console.log("error creating order", response.data);
+      console.log("orderData: ", orderData);
+      console.log(token, 'token23r');
+
+
+      const response = await axios.post(
+        'http://192.168.1.240:8080/api/v1/user/cart/place-order', orderData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      console.log('currentOrderid: ', response.data);
+      const currentOrderId = response.data.id;
+      console.log('currentOrderid: ', currentOrderId);
+
+
+      for (const item of cart) {
+        const cartItemPayload = {
+          price: item.price,
+          quantity: item.quantity,
+          productId: item.productId,
+          userId: user_id,
+          orderId: currentOrderId,
+          img: item.img,
+          id: item.id || 0,
+        };
+
+        await axios.post(
+          'http://192.168.1.240:8080/api/v1/user/cart/add', cartItemPayload,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
       }
+
+      // 3. Sau khi tạo xong
+      navigation.navigate("Order");
+      dispatch(cleanCart());
+      console.log("Order + CartItems created successfully");
+
     } catch (error) {
-      console.log("errror", error);
+      console.log("Error placing order:", error);
     }
   };
+
   const pay = async () => {
     try {
       const options = {
@@ -97,15 +117,6 @@ const ConfirmationScreen = () => {
         theme: { color: "#F37254" },
       };
 
-      const data = await RazorpayCheckout.open(options);
-
-      const orderData = {
-        userId: userId,
-        cartItems: cart,
-        totalPrice: total,
-        shippingAddress: selectedAddress,
-        paymentMethod: "card",
-      };
 
       // const response = await axios.post(
       //   "http://localhost:8000/orders",
