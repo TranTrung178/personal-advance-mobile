@@ -56,11 +56,12 @@ export default function LoginScreen() {
     console.log(user)
 
     axios
-      .post("http://192.168.1.10:8080/api/v1/auth/signin", user)
+      .post("http://192.168.1.240:8080/api/v1/auth/signin", user)
       .then((response) => {
         const user = response.data.user;
         const token = response.data.token;
         const refreshToken = response.data.refreshToken;
+        // userIdGlobal = user.userId;
 
         AsyncStorage.setItem("userId", user.userId);
         AsyncStorage.setItem("authToken", token);
@@ -68,7 +69,7 @@ export default function LoginScreen() {
 
         setUserId(user.userId);
         setToken(token);
-
+        console.log("skdkdjfd");
         navigation.replace("Main");
       })
       .catch((error) => {
