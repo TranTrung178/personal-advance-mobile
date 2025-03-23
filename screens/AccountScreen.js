@@ -19,7 +19,7 @@ const AccountScreen = () => {
 
             try {
                 const response = await axios.get(
-                    `http://192.168.1.240:8080/api/v1/auth/user/${userId}`,
+                    `http://192.168.1.249:8080/api/v1/auth/user/${userId}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }

@@ -123,8 +123,7 @@ const HomeScreen = () => {
   ]);
 
   const { userId, setUserId, token, setToken, refreshToken, setRefreshToken } = useContext(UserType);
-  const [selectedAddress, setSelectedAdress] = useState("");
-
+  console.log("Home: ", userId, token);
 
   const fetchSearchResults = async (text) => {
     if (!text.trim()) return; // Không tìm kiếm nếu input rỗng
@@ -132,7 +131,7 @@ const HomeScreen = () => {
     setloadingSearch(true);
     try {
       const response = await axios.get(
-        `http://192.168.1.240:8080/api/v1/product/search/${text}/1`,
+        `http://192.168.1.249:8080/api/v1/product/search/${text}/1`,
         {
           headers: { Authorization: `Bearer ${token}` }, // Thêm token nếu cần xác thực
         }
@@ -154,7 +153,7 @@ const HomeScreen = () => {
     setIsSorted(true);
 
     try {
-      const response = await axios.get(`http://192.168.1.240:8080/api/v1/product/getall/${page}`);
+      const response = await axios.get(`http://192.168.1.249:8080/api/v1/product/getall/${page}`);
 
       // Kiểm tra response.data có dữ liệu hay không trước khi chuyển thành mảng
       const newProducts = response.data.products
@@ -183,7 +182,7 @@ const HomeScreen = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.1.240:8080/api/v1/product/sort/${order}`,
+        `http://192.168.1.249:8080/api/v1/product/sort/${order}`,
         {
           headers: { Authorization: `Bearer ${token}` }, // Thêm token nếu cần xác thực
         }
@@ -220,7 +219,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://192.168.1.240:8080/api/v1/category/getall");
+        const response = await axios.get("http://192.168.1.249:8080/api/v1/category/getall");
         const categoryData = response.data.map((cat) => ({
           label: cat.name,
           value: cat.id.toString(),
@@ -253,7 +252,7 @@ const HomeScreen = () => {
         fetchProducts();
         return;
       }
-      const url = `http://192.168.1.240:8080/api/v1/product/category/${categoryId}/1`
+      const url = `http://192.168.1.249:8080/api/v1/product/category/${categoryId}/1`
 
       const response = await axios.get(url);
 
@@ -277,7 +276,7 @@ const HomeScreen = () => {
 
   const fetchLast10Products = async () => {
     try {
-      const response = await axios.get("http://192.168.1.240:8080/api/v1/product/last-10");
+      const response = await axios.get("http://192.168.1.249:8080/api/v1/product/last-10");
       const products = response.data ? [].concat(response.data) : [];
       setLastProducts(products);
     } catch (error) {
