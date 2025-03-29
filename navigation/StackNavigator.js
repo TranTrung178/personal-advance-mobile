@@ -13,6 +13,7 @@ import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import ProductInfoScreen from "../screens/ProductInfoScreen";
+import WishlistScreen from "../screens/WishlistScreen";
 import AddAddressScreen from "../screens/AddAddressScreen";
 import AddressScreen from "../screens/AddressScreen";
 import CartScreen from "../screens/CartScreen";
@@ -21,6 +22,8 @@ import AccountScreen from "../screens/AccountScreen";
 import ChangeEmailScreen from "../screens/ChangeEmailScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
 import OrderDetailsScreen from "../screens/OrderDetailsScreen";
+import CashFlowStatisticsScreen from "../screens/CashFlowStatisticsScreen"; 
+import ProductReviewScreen from "../screens/ProductReviewScreen"; 
 import OrderScreen from "../screens/OrderScreen";
 import StartScreen from "../screens/StartScreen";
 
@@ -124,6 +127,11 @@ const StackNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="Wishlist"
+          component={WishlistScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="Address"
           component={AddAddressScreen}
           options={{ headerShown: false }}
@@ -145,8 +153,25 @@ const StackNavigator = () => {
         />
 
         <Stack.Screen
+          name="CashFlowStatistics"
+          component={CashFlowStatisticsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProductReview"
+          component={ProductReviewScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
           name="Order"
           component={OrderScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
           options={{ headerShown: false }}
         />
 

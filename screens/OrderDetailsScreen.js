@@ -17,7 +17,7 @@ const OrderDetailsScreen = () => {
         const fetchOrder = async () => {
             try {
                 const response = await axios.get(
-                    `http://192.168.1.240:8080/api/v1/user/order/${orderId}`,
+                    `http://192.168.1.249:8080/api/v1/user/order/${orderId}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -32,7 +32,7 @@ const OrderDetailsScreen = () => {
         };
         fetchOrder();
     }, [userId, token]);
-    console.log("cacelorderid: ", orderId);
+
     const handleCancelOrder = async () => {
         if (!cancelReason) {
             Alert.alert("Lỗi", "Vui lòng nhập lý do hủy đơn.");
@@ -40,7 +40,7 @@ const OrderDetailsScreen = () => {
         }
         try {
             const response = await axios.post(
-                `http://192.168.1.240:8080/api/v1/user/order/${orderId}/cancel`,
+                `http://192.168.1.249:8080/api/v1/user/order/${orderId}/cancel`,
                 { reason: cancelReason },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -53,7 +53,28 @@ const OrderDetailsScreen = () => {
     };
 
     const renderCartItem = ({ item }) => (
-        <View style={styles.cartItem}>
+        <Pressable
+            style={styles.cartItem}
+            onPress={() => {
+                if (order.orderStatus === "DELIVERED") {
+                    navigation.navigate("ProductReview", {
+                        product: {
+                            id: item.productId,
+                            name: item.productName,
+                            price: item.price,
+                            img1: item.img,
+                            stock: item.quantity > 0 ? 1 : 0, // Giả định stock dựa trên quantity
+                        },
+                        orderStatus: order.orderStatus,
+                    });
+                } else {
+                    Alert.alert(
+                        "Thông báo",
+                        "Chưa thể đánh giá sản phẩm vì đơn hàng chưa được giao thành công."
+                    );
+                }
+            }}
+        >
             <View style={styles.itemRow}>
                 <Image
                     style={styles.itemImage}
@@ -75,7 +96,7 @@ const OrderDetailsScreen = () => {
             <View style={styles.quantityContainer}>
                 <Text style={styles.quantityText}>Số lượng: {item.quantity}</Text>
             </View>
-        </View>
+        </Pressable>
     );
 
     const renderStatus = () => {
@@ -135,8 +156,9 @@ const OrderDetailsScreen = () => {
                     })}
                 </Text>
                 <Text style={styles.infoText}>Địa chỉ: {order.address}</Text>
-                <Text style={styles.infoText}>Tổng tiền: {order.totalAmount.toLocaleString()} VND</Text>
+                <Text style={styles.infoText}>Giá gốc: {order.amount.toLocaleString()} VND</Text>
                 <Text style={styles.infoText}>Giảm giá: {order.discount.toLocaleString()} VND</Text>
+                <Text style={styles.infoTextTotal}>Tổng tiền: {order.totalAmount.toLocaleString()} VND</Text>
                 <Text style={styles.infoText}>Phương thức thanh toán: {order.payment || "Chưa xác định"}</Text>
                 <Text style={styles.infoText}>Mã giảm giá: {order.couponName}</Text>
                 {order.trackingId && (
@@ -218,6 +240,12 @@ const styles = StyleSheet.create({
         color: "#333",
         marginBottom: 8,
     },
+    infoTextTotal: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        color: "#333",
+        marginBottom: 8,
+    },
     statusContainer: {
         backgroundColor: "#fff",
         padding: 15,
@@ -286,6 +314,7 @@ const styles = StyleSheet.create({
         width: 140,
         height: 140,
         resizeMode: "contain",
+        marginRight: 10
     },
     itemDetails: {
         width: 140,

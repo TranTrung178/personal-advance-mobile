@@ -31,7 +31,7 @@ const RegisterScreen = () => {
 
     // send a POST  request to the backend API to register the user
     axios
-      .post("http://192.168.1.240:8080/api/v1/auth/signup", user)
+      .post("http://192.168.1.249:8080/api/v1/auth/signup", user)
       .then((response) => {
         console.log(response);
         Alert.alert("Registration successful", "Please verify your email with the OTP sent.");

@@ -16,6 +16,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/CartReducer";
+import { addToWishlist, removeFromWishlist } from "../redux/WishlistReducer";
 import axios from "axios";
 import { UserType } from "../UserContext";
 
@@ -31,15 +32,16 @@ const ProductInfoScreen = () => {
   const height = width;
   const dispatch = useDispatch();
 
-  console.log("ProductInfo userId: ", userId, token);
-  console.log("ProductInfo productId: ", route.params.id);
+  // Lấy danh sách wishlist từ Redux store
+  const wishlist = useSelector((state) => state.wishlist.wishlist);
+  const isWishlisted = wishlist.some((item) => item.product_id === route.params.id);
 
   // Lấy danh sách bình luận/đánh giá
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.1.240:8080/api/v1/user/review/${route.params.id}`,
+          `http://192.168.1.249:8080/api/v1/user/review/${route.params.id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -60,6 +62,28 @@ const ProductInfoScreen = () => {
     }, 60000);
   };
 
+  // Xử lý thêm/xóa khỏi wishlist
+  const toggleWishlist = () => {
+    if (isWishlisted) {
+      // Xóa khỏi wishlist
+      dispatch(removeFromWishlist(route.params.id));
+      Alert.alert("Thành công", "Đã xóa sản phẩm khỏi danh sách yêu thích.");
+    } else {
+      // Thêm vào wishlist
+      const wishlistItem = {
+        id: Date.now(), // Tạo ID tạm thời (có thể thay bằng ID từ backend nếu cần)
+        user_id: userId,
+        product_id: route.params.id,
+        product_name: route.params.name,
+        price: route.params.price,
+        stoke: route.params.stock,
+        img: route.params.img1,
+      };
+      dispatch(addToWishlist(wishlistItem));
+      Alert.alert("Thành công", "Đã thêm sản phẩm vào danh sách yêu thích.");
+    }
+  };
+
   // Xử lý gửi đánh giá
   const submitReview = async () => {
     if (!comment || rating === 0) {
@@ -69,7 +93,7 @@ const ProductInfoScreen = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.240:8080/api/v1/user/review",
+        "http://192.168.1.249:8080/api/v1/user/review",
         {
           product_id: route.params.id,
           user_id: userId,
@@ -141,9 +165,13 @@ const ProductInfoScreen = () => {
                   <MaterialCommunityIcons name="share-variant" size={24} color="#333" />
                 </View>
               </View>
-              <View style={styles.favoriteButton}>
-                <AntDesign name="hearto" size={24} color="#333" />
-              </View>
+              <Pressable style={styles.favoriteButton} onPress={toggleWishlist}>
+                <AntDesign
+                  name={isWishlisted ? "heart" : "hearto"}
+                  size={24}
+                  color={isWishlisted ? "#e63946" : "#333"}
+                />
+              </Pressable>
             </ImageBackground>
           ))}
       </ScrollView>
@@ -191,11 +219,11 @@ const ProductInfoScreen = () => {
       </Pressable>
 
       {/* Review Section */}
+    
       <View style={styles.reviewContainer}>
         <Text style={styles.reviewTitle}>Đánh giá sản phẩm</Text>
 
-        {/* Review Form */}
-        <View style={styles.reviewForm}>
+        {/* <View style={styles.reviewForm}>
           <Text style={styles.formLabel}>Chọn số sao:</Text>
           <View style={styles.starContainer}>
             {[1, 2, 3, 4, 5].map((star) => (
@@ -225,9 +253,8 @@ const ProductInfoScreen = () => {
           <Pressable style={styles.submitButton} onPress={submitReview}>
             <Text style={styles.buttonText}>Gửi đánh giá</Text>
           </Pressable>
-        </View>
+        </View> */}
 
-        {/* Review List */}
         <View style={styles.reviewList}>
           {reviews.length > 0 ? (
             reviews.map((review, index) => (
@@ -254,6 +281,8 @@ const ProductInfoScreen = () => {
           )}
         </View>
       </View>
+   
+   
     </ScrollView>
   );
 };
