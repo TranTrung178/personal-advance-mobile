@@ -56,7 +56,7 @@ export default function LoginScreen() {
     console.log(user)
 
     axios
-      .post("http://192.168.1.240:8080/api/v1/auth/signin", user)
+      .post("http://192.168.1.249:8080/api/v1/auth/signin", user)
       .then((response) => {
         const user = response.data.user;
         const token = response.data.token;

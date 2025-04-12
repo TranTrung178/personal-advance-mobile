@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useLayoutEffect, useContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Ionicons, AntDesign, MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
 import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -43,12 +43,12 @@ const ProfileScreen = () => {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            gap: 6,
+            gap: 10,
             marginRight: 12,
           }}
         >
-          <Ionicons name="notifications-outline" size={24} color="black" />
-          <AntDesign name="search1" size={24} color="black" />
+          <Ionicons name="notifications-outline" size={26} color="#333333" />
+          <AntDesign name="search1" size={26} color="#333333" />
         </View>
       ),
     });
@@ -74,7 +74,7 @@ const ProfileScreen = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.1.240:8080/api/v1/user/my-orders/${userId}`,
+        `http://192.168.1.249:8080/api/v1/user/my-orders/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -98,17 +98,21 @@ const ProfileScreen = () => {
 
   const renderOrderItem = ({ item }) => {
     const statusStyles = {
-      NEW: { color: "#007bff" },
-      CONFIRMED: { color: "#ffc107" },
-      PREPARING: { color: "#6f42c1" },
-      SHIPPING: { color: "#17a2b8" },
-      DELIVERED: { color: "#28a745" },
-      CANCELED: { color: "#dc3545" },
+      NEW: { color: "#007bff", backgroundColor: "#e6f3ff" },
+      CONFIRMED: { color: "#ffc107", backgroundColor: "#fff8e1" },
+      PREPARING: { color: "#6f42c1", backgroundColor: "#f3e8ff" },
+      SHIPPING: { color: "#17a2b8", backgroundColor: "#e6f7fa" },
+      DELIVERED: { color: "#28a745", backgroundColor: "#e6f4ea" },
+      CANCELED: { color: "#dc3545", backgroundColor: "#f8e8eb" },
     };
 
     return (
       <Pressable
-        style={styles.orderCard}
+        style={({ pressed }) => [
+          styles.orderCard,
+          { backgroundColor: statusStyles[item.orderStatus].backgroundColor },
+          pressed && styles.orderCardPressed,
+        ]}
         onPress={() => navigation.navigate("OrderHistory", { orderId: item.id })}
       >
         <Text style={styles.orderId}>Mã đơn: {item.id}</Text>
@@ -118,7 +122,7 @@ const ProfileScreen = () => {
         {item.couponName && item.couponName !== "NONE" && (
           <Text style={styles.couponName}>🎁 {item.couponName}</Text>
         )}
-        <Text style={[styles.orderStatus, statusStyles[item.orderStatus]]}>
+        <Text style={[styles.orderStatus, { color: statusStyles[item.orderStatus].color }]}>
           🏷 {item.orderStatus}
         </Text>
         {Array.isArray(item.cartItems) && item.cartItems.slice(0, 1).map((cartItem) => (
@@ -148,20 +152,48 @@ const ProfileScreen = () => {
       contentContainerStyle={styles.ordersListContent}
       ListHeaderComponent={
         <>
-          <Text style={styles.welcomeText}>Welcome</Text>
+          <Text style={styles.welcomeText}>Profile</Text>
           <View style={styles.buttonRow}>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>Your orders</Text>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => navigation.navigate("Wishlist")}
+            >
+              <AntDesign name="heart" size={20} color="#333333" style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Wishlist</Text>
             </Pressable>
-            <Pressable style={styles.button} onPress={() => navigation.replace("Account")}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => navigation.navigate("Account")}
+            >
+              <Ionicons name="person-outline" size={20} color="#333333" style={styles.buttonIcon} />
               <Text style={styles.buttonText}>Your Account</Text>
             </Pressable>
           </View>
           <View style={styles.buttonRow}>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>Buy Again</Text>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => navigation.navigate("CashFlowStatistics")}
+            >
+              <MaterialIcons name="bar-chart" size={20} color="#333333" style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Statistics</Text>
             </Pressable>
-            <Pressable style={styles.button} onPress={logout}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={logout}
+            >
+              <AntDesign name="logout" size={20} color="#333333" style={styles.buttonIcon} />
               <Text style={styles.buttonText}>Logout</Text>
             </Pressable>
           </View>
@@ -181,91 +213,117 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
-    padding: 10,
+    padding: 20,
   },
   welcomeText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 12,
+    fontSize: 26,
+    fontWeight: "700",
+    color: "#333333",
+    textAlign: "center",
+    marginBottom: 25,
+    textTransform: "uppercase",
   },
   buttonRow: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 12,
+    justifyContent: "space-between",
+    marginBottom: 20,
   },
   button: {
     flex: 1,
-    padding: 12,
-    backgroundColor: "#e0e0e0",
-    borderRadius: 25,
+    flexDirection: "row",
     alignItems: "center",
-    elevation: 2,
+    justifyContent: "center",
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: "#333333",
+    marginHorizontal: 8,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  buttonPressed: {
+    backgroundColor: "#878595",
+    borderColor: "#333333",
+  },
+  buttonIcon: {
+    marginRight: 8,
   },
   buttonText: {
     fontSize: 16,
-    color: "#333",
     fontWeight: "600",
+    color: "#333333",
   },
   ordersListContent: {
-    paddingBottom: 15,
+    paddingBottom: 20,
   },
   orderCard: {
     flex: 0.5,
-    backgroundColor: "#fff",
-    margin: 5,
-    padding: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#d0d0d0",
+    margin: 8,
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: "#333333",
     alignItems: "center",
-    elevation: 2,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  orderCardPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.98 }],
   },
   orderId: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: "700",
+    color: "#333333",
+    marginBottom: 6,
   },
   orderAmount: {
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 15,
+    fontWeight: "600",
     color: "#28a745",
-    marginTop: 5,
+    marginVertical: 6,
   },
   couponName: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#007bff",
     fontStyle: "italic",
-    marginTop: 5,
+    marginVertical: 6,
   },
   orderStatus: {
-    fontSize: 14,
-    marginTop: 5,
+    fontSize: 15,
     fontWeight: "600",
+    marginVertical: 6,
+    textTransform: "capitalize",
   },
   orderImage: {
-    width: 100,
-    height: 100,
-    marginVertical: 10,
+    width: 110,
+    height: 110,
+    marginTop: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
   },
   loadingText: {
     fontSize: 16,
-    color: "#333",
+    fontWeight: "500",
+    color: "#333333",
     textAlign: "center",
+    marginVertical: 20,
   },
   noOrdersText: {
     fontSize: 16,
-    color: "#333",
+    fontWeight: "500",
+    color: "#333333",
     textAlign: "center",
+    marginVertical: 20,
   },
 });
 
