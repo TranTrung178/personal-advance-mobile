@@ -52,7 +52,7 @@ const CashFlowStatisticsScreen = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`http://192.168.1.249:8080/api/v1/user/cashflow/${id}`, {
+            const response = await axios.get(`http://192.168.5.123:8080/api/v1/user/cashflow/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setStatistics(response.data);

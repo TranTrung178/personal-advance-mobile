@@ -12,7 +12,7 @@ const ResetPasswordScreen = () => {
 
     const handleResetPassword = () => {
         axios
-            .post("http://192.168.1.249:8080/api/v1/auth/reset-password", { email, otp, newPassword })
+            .post("http://192.168.5.123:8080/api/v1/auth/reset-password", { email, otp, newPassword })
             .then((response) => {
                 Alert.alert("Success", "Your password has been reset.");
                 navigation.navigate("Login");

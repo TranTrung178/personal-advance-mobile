@@ -20,7 +20,7 @@ const ProductReviewScreen = () => {
         const fetchReviews = async () => {
             try {
                 const response = await axios.get(
-                    `http://192.168.1.249:8080/api/v1/user/review/${product.id}`,
+                    `http://192.168.5.123:8080/api/v1/user/review/${product.id}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -47,7 +47,7 @@ const ProductReviewScreen = () => {
 
         try {
             const response = await axios.post(
-                "http://192.168.1.249:8080/api/v1/user/review",
+                "http://192.168.5.123:8080/api/v1/user/review",
                 {
                     product_id: product.id,
                     user_id: userId,

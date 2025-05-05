@@ -74,7 +74,7 @@ const ProfileScreen = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.1.249:8080/api/v1/user/my-orders/${userId}`,
+        `http://192.168.5.123:8080/api/v1/user/my-orders/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

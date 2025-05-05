@@ -17,7 +17,7 @@ const OrderDetailsScreen = () => {
         const fetchOrder = async () => {
             try {
                 const response = await axios.get(
-                    `http://192.168.1.249:8080/api/v1/user/order/${orderId}`,
+                    `http://192.168.5.123:8080/api/v1/user/order/${orderId}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -40,7 +40,7 @@ const OrderDetailsScreen = () => {
         }
         try {
             const response = await axios.post(
-                `http://192.168.1.249:8080/api/v1/user/order/${orderId}/cancel`,
+                `http://192.168.5.123:8080/api/v1/user/order/${orderId}/cancel`,
                 { reason: cancelReason },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

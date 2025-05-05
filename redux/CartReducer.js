@@ -10,7 +10,7 @@ export const fetchCart = createAsyncThunk(
       console.log(checkCart, 'kkkk');
       if (1) {
         response = await axios.get(
-          `http://192.168.1.249:8080/api/v1/user/cart/${userId}`,
+          `http://192.168.5.123:8080/api/v1/user/cart/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

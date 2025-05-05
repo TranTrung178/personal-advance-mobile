@@ -41,7 +41,7 @@ const ProductInfoScreen = () => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.1.249:8080/api/v1/user/review/${route.params.id}`,
+          `http://192.168.5.123:8080/api/v1/user/review/${route.params.id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -93,7 +93,7 @@ const ProductInfoScreen = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.249:8080/api/v1/user/review",
+        "http://192.168.5.123:8080/api/v1/user/review",
         {
           product_id: route.params.id,
           user_id: userId,
@@ -219,7 +219,7 @@ const ProductInfoScreen = () => {
       </Pressable>
 
       {/* Review Section */}
-    
+
       <View style={styles.reviewContainer}>
         <Text style={styles.reviewTitle}>Đánh giá sản phẩm</Text>
 
@@ -281,8 +281,8 @@ const ProductInfoScreen = () => {
           )}
         </View>
       </View>
-   
-   
+
+
     </ScrollView>
   );
 };

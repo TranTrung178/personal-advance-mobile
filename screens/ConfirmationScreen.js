@@ -50,7 +50,7 @@ const ConfirmationScreen = () => {
   const fetchReviewPoints = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.1.249:8080/api/v1/user/review/coupon/${user_id}`,
+        `http://192.168.5.123:8080/api/v1/user/review/coupon/${user_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -73,7 +73,7 @@ const ConfirmationScreen = () => {
     setCouponError("");
     try {
       const response = await axios.get(
-        `http://192.168.1.249:8080/api/v1/admin/coupon/user/${user_id}`,
+        `http://192.168.5.123:8080/api/v1/admin/coupon/user/${user_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -119,12 +119,14 @@ const ConfirmationScreen = () => {
         return;
       }
     }
+    console.log("coupon: ", coupon);
 
     setSelectedCoupon(coupon);
     const discount = coupon.discount / 100;
     const discountValue = total * discount;
     setDiscountAmount(discountValue);
     setTotalAmount(total - discountValue);
+    console.log('totalamount', total - discountValue);
     Alert.alert("Thành công", `Áp dụng mã ${coupon.name} giảm ${coupon.discount}%!`);
   };
 
@@ -155,9 +157,8 @@ const ConfirmationScreen = () => {
   const handleNextStep = async () => {
     if (selectedCoupon && selectedCoupon.code.startsWith("POINTS_")) {
       try {
-        await axios.post(
-          `http://192.168.1.249:8080/api/v1/user/review/mark-used/${user_id}`,
-          {},
+        await axios.get(
+          `http://192.168.5.123:8080/api/v1/user/review/mark-used/${user_id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -183,12 +184,15 @@ const ConfirmationScreen = () => {
         totalAmount: totalAmount,
         payment: selectedOption,
         discount: selectedCoupon ? selectedCoupon.discount : 0,
-        couponId: selectedCoupon && !selectedCoupon.id.startsWith("points_") ? selectedCoupon.id : 0,
+        couponId: (selectedCoupon?.id && typeof selectedCoupon.id === 'string' && !selectedCoupon.id.startsWith("points_"))
+          ? selectedCoupon.id
+          : 0,
         orderId: orderId || 0,
       };
+      console.log("place-order", orderData);
 
       const response = await axios.post(
-        "http://192.168.1.249:8080/api/v1/user/cart/place-order",
+        "http://192.168.5.123:8080/api/v1/user/cart/place-order",
         orderData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -209,7 +213,7 @@ const ConfirmationScreen = () => {
         };
 
         await axios.post(
-          "http://192.168.1.249:8080/api/v1/user/cart/add",
+          "http://192.168.5.123:8080/api/v1/user/cart/add",
           cartItemPayload,
           {
             headers: { Authorization: `Bearer ${token}` },
